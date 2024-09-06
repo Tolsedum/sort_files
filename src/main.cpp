@@ -1,21 +1,41 @@
 #include "sort_files/FileManager.hpp"
 
-#include <chrono>
+
+std::string date(std::string new_file){
+    struct stat fileStat;
+    if (stat(new_file.c_str(), &fileStat) == 0) { 
+        unsigned long tim = (unsigned long)fileStat.st_ctim.tv_sec;
+        return ufn::convertTimestampDateToString(tim);
+    } else { 
+        return "Failed to retrieve file information\n"; 
+    } 
+    return "";
+}
 
 int main(int argc, char *argv[]){
-
-    // ToDo Добавить настройку, если проверка по параметрам то складывать в отдельное место
-    
     if(argc > 1){
-        std::string file_name;
+        std::string path_name;
         std::vector<sort_files::SortType> types;
         std::map<std::string, std::string> params;
         for (int i = 0; i < argc; i++){
             std::string arg{argv[i]};
-            if(arg == "--file_name"){
+            if(arg == "--help"){
+                std::cout 
+                << " --path_name  - The folder from which to sort files" << std::endl
+                << std::endl
+                << " --types_sort - Types of file sorting" << std::endl
+                << "        date_in_path      - takes file data from the directory structure (year/month/day.month.year)" << std::endl
+                << "        date_in_file_name - takes the creation date of the file from its name (row_date_number in order)" << std::endl
+                << "        timestamp         - the name of the file is the type of timestamp" << std::endl
+                << "        params            - taking the date from the file parameters (doesn't always work)" << std::endl
+                << std::endl
+                << " --params_dir - sort by type 'params' in a separate folder" << std::endl
+                << std::endl;
+                return 0;
+            }else if(arg == "--path_name"){
                 i++;
                 if(i < argc){
-                    file_name = argv[i];
+                    path_name = argv[i];
                 }
             }else if(arg == "--types_sort"){
                 i++;
@@ -39,12 +59,13 @@ int main(int argc, char *argv[]){
                 }
             }
         }
-        if(!file_name.empty()){
-            sort_files::FileManager manager(file_name, types, params);
+        if(!path_name.empty()){
+            sort_files::FileManager manager(path_name, types, params);
             manager.sort();
         }else{
             std::cout<< "Enter dir name!!!" << std::endl;
         }
     }
+
     std::cout << "Exit" << std::endl;
 }

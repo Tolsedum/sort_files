@@ -1,6 +1,6 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
-/** Version 1.1 */
+/** Version 1.4 */
 
 /**
  *  __________________________________________
@@ -65,6 +65,14 @@ namespace hashes{
  * @author Tolsedum
 */
 namespace ufn{
+
+    /**
+     * @brief Check string to date format
+     * @author Tolsedum
+     * @param str_date
+     * @return If str_date is date then true else false
+     */
+    bool isDate(const std::string& str_date);
 
     inline std::runtime_error
         error_in_function_create_file_and_dir("");

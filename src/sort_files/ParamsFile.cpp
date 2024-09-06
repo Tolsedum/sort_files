@@ -12,16 +12,14 @@ sort_files::ParamsFile::ParamsFile(
 {}
 
 std::string sort_files::ParamsFile::getFileDate(std::string file_name){
-    auto d = std::filesystem::last_write_time(file_name);
-    auto sctp =
-      std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-        d - std::filesystem::file_time_type::clock::now()
-        + std::chrono::system_clock::now()
-      );
-    unsigned long cftime =
-        std::chrono::system_clock::to_time_t(sctp);
-    
-    return ufn::convertTimestampDateToString(cftime);
+    struct stat fileStat;
+    if (stat(file_name.c_str(), &fileStat) == 0) { 
+        unsigned long tim = (unsigned long)fileStat.st_ctim.tv_sec;
+        return ufn::convertTimestampDateToString(tim);
+    } else { 
+        return "Failed to retrieve file information\n"; 
+    } 
+    return "";
 }
 
 std::string sort_files::ParamsFile::parsName(std::filesystem::directory_entry path){
@@ -43,9 +41,11 @@ std::string sort_files::ParamsFile::parsName(std::filesystem::directory_entry pa
             }
         }
         if(!year.empty() && !month.empty() && !date.empty()){
-            ret_value.append(*direction_).append("/")
-                .append(params_dir_).append("/")
-                .append(year).append("/")
+            ret_value.append(*direction_).append("/");
+            if(!params_dir_.empty()){
+                ret_value.append(params_dir_).append("/");
+            }
+            ret_value.append(year).append("/")
                 .append(month).append(" ")
                 .append((*month_)[ufn::strToInt(month)-1]).append("/")
                 .append(date).append(".")

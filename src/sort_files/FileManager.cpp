@@ -82,13 +82,21 @@ void sort_files::FileManager::sort(){
     }
 }
 
+
 void sort_files::FileManager::createFile(std::string new_file, std::string source_file){
     if(!std::filesystem::exists(new_file)){
         std::string parent_dir = ufn::getParentDir(new_file);
         if(!std::filesystem::exists(parent_dir)){
             std::filesystem::create_directories(parent_dir);
         }
-        std::filesystem::copy_file(source_file, new_file);
+
+        if(false){ // Если есть запрос на перенос файла
+            // rename(old_file.c_str(), new_file.c_str());
+        }else{
+            std::filesystem::file_time_type new_time = std::filesystem::last_write_time(source_file);
+            std::filesystem::copy_file(source_file, new_file);
+            std::filesystem::last_write_time(new_file, new_time);
+        }
         std::cout<< "File is ready: " << new_file <<std::endl;
     }else{
         std::cout<< "File exists: " << new_file <<std::endl;
