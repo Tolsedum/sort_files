@@ -30,6 +30,8 @@ int main(int argc, char *argv[]){
                 << "        params            - taking the date from the file parameters (doesn't always work)" << std::endl
                 << std::endl
                 << " --params_dir - sort by type 'params' in a separate folder" << std::endl
+                << std::endl
+                << " --rename_file - move a file" << std::endl
                 << std::endl;
                 return 0;
             }else if(arg == "--path_name"){
@@ -57,6 +59,8 @@ int main(int argc, char *argv[]){
                 if(i < argc){
                     params["params_dir"] = argv[i];
                 }
+            }else if(arg == "--rename_file"){
+                params["rename_file"] = "true";
             }
         }
         if(!path_name.empty()){

@@ -25,7 +25,7 @@ sort_files::FileManager::FileManager(
 
 void sort_files::FileManager::defaulInit(){
     if(params_.empty()){
-        for (auto &&key : {"params_dir"}){
+        for (auto &&key : {"params_dir", "rename_file"}){
             params_[key] = "";
         }
     }
@@ -90,8 +90,8 @@ void sort_files::FileManager::createFile(std::string new_file, std::string sourc
             std::filesystem::create_directories(parent_dir);
         }
 
-        if(false){ // Если есть запрос на перенос файла
-            // rename(old_file.c_str(), new_file.c_str());
+        if(params_["rename_file"] == "true"){ // Если есть запрос на перенос файла
+            rename(source_file.c_str(), new_file.c_str());
         }else{
             std::filesystem::file_time_type new_time = std::filesystem::last_write_time(source_file);
             std::filesystem::copy_file(source_file, new_file);
