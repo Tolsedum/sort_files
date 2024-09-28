@@ -54,6 +54,7 @@ void sort_files::FileManager::sort(){
             : std::filesystem::recursive_directory_iterator(path_for_sort_)
         ){
             std::string new_path;
+            SortType type_;
             for (auto &&type : list_type_){
                 switch (type){
                     case SortType::date_in_path:
@@ -65,6 +66,9 @@ void sort_files::FileManager::sort(){
                     case SortType::timestamp:
                         new_path = timestampFileName(file_name_in_path);
                         break;
+                    case SortType::meta_date:
+                        new_path = metaDate(file_name_in_path);
+                        break;
                     case SortType::params:
                         new_path = fileParams(file_name_in_path);
                         break;
@@ -72,18 +76,23 @@ void sort_files::FileManager::sort(){
                         break;
                 }
                 if(!new_path.empty()){
+                    type_ = type;
                     break;
                 }
             }
             if(!new_path.empty()){
-                createFile(new_path, file_name_in_path.path().string());
+                createFile(new_path, file_name_in_path.path().string(), type_);
             }
+        }
+        std::cout<< "Existing files: " <<std::endl;
+        for (auto &&iter : existing_files_){
+            std::cout<< iter <<std::endl;
         }
     }
 }
 
 
-void sort_files::FileManager::createFile(std::string new_file, std::string source_file){
+void sort_files::FileManager::createFile(std::string new_file, std::string source_file, SortType type){
     if(!std::filesystem::exists(new_file)){
         std::string parent_dir = ufn::getParentDir(new_file);
         if(!std::filesystem::exists(parent_dir)){
@@ -97,8 +106,9 @@ void sort_files::FileManager::createFile(std::string new_file, std::string sourc
             std::filesystem::copy_file(source_file, new_file);
             std::filesystem::last_write_time(new_file, new_time);
         }
-        std::cout<< "File is ready: " << new_file <<std::endl;
+        std::cout<< "Methode " + strSortType[(int)type] + "; " << "File is ready: " << new_file <<std::endl;
     }else{
+        existing_files_.push_back(new_file);
         std::cout<< "File exists: " << new_file <<std::endl;
     }
 }
@@ -121,4 +131,9 @@ std::string sort_files::FileManager::timestampFileName(std::filesystem::director
 std::string sort_files::FileManager::fileParams(std::filesystem::directory_entry path){
     ParamsFile paramsFile(direction_, month_, params_["params_dir"]);
     return paramsFile.parsName(path);
+}
+
+std::string sort_files::FileManager::metaDate(std::filesystem::directory_entry path){
+    MetaDate metaDate(direction_, month_);
+    return metaDate.getFileDate(path);
 }

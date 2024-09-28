@@ -24,7 +24,7 @@ sort_files::FileDate sort_files::Timestamp::getFileDate(std::string file_name){
 std::string sort_files::Timestamp::parsName(std::filesystem::directory_entry path){
     std::string result{};
     FileDate date = getFileDate(path.path().stem());
-    if(date.notEmpty()){
+    if(date.notEmpty() && date.year != 1970){
         std::string str_date = std::to_string(date.day);
         std::string month = std::to_string(date.month);
         std::string year = std::to_string(date.year);

@@ -1,5 +1,5 @@
-#ifndef FILE_MANAGER_HPP
-#define FILE_MANAGER_HPP
+#ifndef META_DATE_HPP
+#define META_DATE_HPP
 
 /** Version 0 */
 
@@ -35,54 +35,42 @@
  * |__________________________________________|
  */
 
-#include <string>
-#include <map>
 #include "functions.hpp"
-#include "sort_files/DateInFileName.hpp"
-#include "sort_files/Timestamp.hpp"
-#include "sort_files/DateInPath.hpp"
-#include "sort_files/ParamsFile.hpp"
-#include "sort_files/MetfDate.hpp"
+// #include <string>
+#include "ExifTool.h"
 
 namespace sort_files{
 
-enum SortType{date_in_path, date_in_file_name, timestamp, meta_date, params};// params alwaнs last
-inline std::vector<std::string> strSortType{
-    "date_in_path", "date_in_file_name", "timestamp", "meta_date", "params"
-};
+    struct MetaFileDate{
+        
 
-class FileManager{
-protected:
-    bool valid_;
-    
-    std::string direction_;
-    /** Path wheare sorting file */
-    std::string path_for_sort_;
-    /** Sort type */
-    std::vector<SortType> list_type_;
+        MetaFileDate(std::string file_name);
+        ~MetaFileDate();
 
-    std::vector<std::string> month_;
-    std::vector<std::string> existing_files_;
+        std::string getDate();
 
-    std::map<std::string, std::string> params_;
+    protected:
+        std::string date_;
+        TagInfo *info_;
+        ExifTool *et_;
+        std::map<std::string, std::string> date_list_;
+    };
 
-    void defaulInit();
+    class MetaDate{
+    protected:
+        std::string *direction_;
+        std::vector<std::string> *month_;
+        std::string params_dir_;
 
-    void createFile(std::string new_file, std::string source_file, SortType type);
+    public:
+        MetaDate(std::string &direction, std::vector<std::string> &month)
+        : direction_(&direction)
+        , month_(&month)
+        {};
+        ~MetaDate(){};
 
-    std::string dateInPath(std::filesystem::directory_entry path);
-    std::string dateInFileName(std::filesystem::directory_entry path);
-    std::string timestampFileName(std::filesystem::directory_entry path);
-    std::string fileParams(std::filesystem::directory_entry path);
-    std::string metaDate(std::filesystem::directory_entry path);
-public:
-    FileManager(std::string path);
-    FileManager(std::string path, std::vector<SortType> types);
-    FileManager(std::string path, std::vector<SortType> types, std::map<std::string, std::string> params);
-    
-    ~FileManager(){};
-    void sort();
-
-};
+        std::string getFileDate(std::filesystem::directory_entry path);
+    };
 }
-#endif // FILE_MANAGER_HPP
+
+#endif // META_DATE_HPP
