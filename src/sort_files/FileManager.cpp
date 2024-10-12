@@ -98,13 +98,15 @@ void sort_files::FileManager::createFile(std::string new_file, std::string sourc
         if(!std::filesystem::exists(parent_dir)){
             std::filesystem::create_directories(parent_dir);
         }
-
         if(params_["rename_file"] == "true"){ // Если есть запрос на перенос файла
             rename(source_file.c_str(), new_file.c_str());
+            std::filesystem::path path(source_file);
+            std::string parent_dir = path.parent_path();
+            if(path_for_sort_ != parent_dir && std::filesystem::is_empty(parent_dir)){
+                rmdir(parent_dir.c_str());
+            }
         }else{
-            std::filesystem::file_time_type new_time = std::filesystem::last_write_time(source_file);
             std::filesystem::copy_file(source_file, new_file);
-            std::filesystem::last_write_time(new_file, new_time);
         }
         std::cout<< "Methode " + strSortType[(int)type] + "; " << "File is ready: " << new_file <<std::endl;
     }else{

@@ -9,7 +9,8 @@ int main(int argc, char *argv[]){
 //     };
 //     sort_files::MetaDate date(d, s);
 //     std::cout<<  date.getFileDate(std::filesystem::directory_entry{"Новая папка/20181106_140735.jpg"}) << std::endl;
-//    return 0;
+    // std::filesystem::path::;
+    // return 0;
 
     if (argc > 1){
         std::string path_name;
